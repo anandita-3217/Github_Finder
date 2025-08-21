@@ -27,5 +27,15 @@
  */
 
 import './index.css';
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Simple GitHub Explorer loaded! 🚀');
+    
+    // All the logic is already in the HTML file
+    // This file exists just in case you want to separate concerns
+    
+    // You can move the JavaScript from the HTML file here if you prefer
+    // Just remember to include this script in your HTML:
+    // <script src="renderer.js"></script>
+});
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');

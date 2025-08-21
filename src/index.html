@@ -1,12 +1,461 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hello World!</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com https://github.com; connect-src 'self' https://api.github.com https://github-contributions-api.jogruber.de;">
+    <title>Find Anyone's GitHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  </head>
-  <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-  </body>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .git-hub-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .git-hub-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .git-hub-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .git-hub-input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .git-hub-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .git-hub-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .git-hub-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .git-hub-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .git-hub-button:active {
+            transform: translateY(0);
+        }
+
+        .git-hub-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .git-hub-error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e6ed;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .git-hub-data {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .git-hub-name {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .git-hub-image-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .git-hub-image-container h4 {
+            color: #34495e;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .git-hub-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .git-hub-image:hover {
+            transform: scale(1.05);
+        }
+
+        .git-hub-stats h3 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-item strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .git-hub-footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .git-hub-input-section {
+                flex-direction: column;
+            }
+            
+            .git-hub-input {
+                min-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="git-hub-container">
+        <h1 class="git-hub-title">Find Anyone's GitHub</h1>
+        <p class="git-hub-subtitle">Search for people using their GitHub usernames</p>
+        
+        <div class="git-hub-input-section">
+            <input 
+                type="text" 
+                id="githubInput" 
+                class="git-hub-input" 
+                placeholder="Find people with their github username" 
+            />
+            <button id="findButton" class="git-hub-button">Find</button>
+            <button id="myGithubButton" class="git-hub-button">My GitHub</button>
+        </div>
+
+        <div id="errorMessage" class="git-hub-error hidden"></div>
+        
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Fetching GitHub data...</p>
+        </div>
+
+        <div id="githubData" class="git-hub-data hidden">
+            <h2 id="userName" class="git-hub-name"></h2>
+            <div class="git-hub-image-container">
+                <h4 id="userRealName"></h4>
+                <a id="profileLink" href="#" target="_blank">
+                    <img id="userAvatar" src="" alt="User Avatar" class="git-hub-image"/>
+                </a>
+            </div>
+            <div class="git-hub-stats">
+                <h3>Base Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <strong>GitHub Age</strong>
+                        <div id="githubAge" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Public Repos</strong>
+                        <div id="publicRepos" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Followers</strong>
+                        <div id="followers" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Following</strong>
+                        <div id="following" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Languages</strong>
+                        <div id="languages" class="stat-value">Loading...</div>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Total Contributions</strong>
+                        <div id="contributions" class="stat-value">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="git-hub-footer">All the best!</div>
+    </div>
+
+    <script>
+        // 🎯 Simple GitHub Explorer - Electron Edition
+        
+        let isLoading = false;
+
+        // DOM Elements
+        const elements = {
+            input: document.getElementById('githubInput'),
+            findButton: document.getElementById('findButton'),
+            myGithubButton: document.getElementById('myGithubButton'),
+            errorMessage: document.getElementById('errorMessage'),
+            loading: document.getElementById('loading'),
+            githubData: document.getElementById('githubData'),
+            userName: document.getElementById('userName'),
+            userRealName: document.getElementById('userRealName'),
+            userAvatar: document.getElementById('userAvatar'),
+            profileLink: document.getElementById('profileLink'),
+            githubAge: document.getElementById('githubAge'),
+            publicRepos: document.getElementById('publicRepos'),
+            followers: document.getElementById('followers'),
+            following: document.getElementById('following'),
+            languages: document.getElementById('languages'),
+            contributions: document.getElementById('contributions')
+        };
+
+        // Event Listeners
+        elements.findButton.addEventListener('click', () => {
+            const username = elements.input.value.trim();
+            if (username) {
+                fetchGitHubData(username);
+            } else {
+                showError('Please enter a GitHub username!');
+            }
+        });
+
+        elements.myGithubButton.addEventListener('click', () => {
+            elements.input.value = 'anandita-3217';
+            fetchGitHubData('anandita-3217');
+        });
+
+        elements.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isLoading) {
+                elements.findButton.click();
+            }
+        });
+
+        // Main fetch function
+        async function fetchGitHubData(username) {
+            if (isLoading) return;
+            
+            setLoading(true);
+            hideError();
+            hideData();
+
+            try {
+                // Fetch user data
+                const userResult = await window.githubAPI.getUser(username);
+                
+                if (!userResult.success) {
+                    throw new Error(userResult.error);
+                }
+
+                const userData = userResult.data;
+                
+                // Display basic user data
+                displayUserData(userData);
+                
+                // Fetch additional data in parallel
+                const [reposResult, contributionsResult] = await Promise.all([
+                    window.githubAPI.getRepos(username),
+                    window.githubAPI.getContributions(username)
+                ]);
+                
+                // Display languages
+                if (reposResult.success && reposResult.languages) {
+                    displayLanguages(reposResult.languages);
+                }
+                
+                // Display contributions
+                if (contributionsResult.success) {
+                    displayContributions(contributionsResult.data);
+                }
+
+            } catch (error) {
+                console.error('GitHub fetch error:', error);
+                showError(error.message || 'Failed to fetch GitHub data');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function displayUserData(userData) {
+            elements.userName.textContent = userData.login;
+            elements.userRealName.textContent = userData.name || userData.login;
+            elements.userAvatar.src = userData.avatar_url;
+            elements.userAvatar.alt = userData.name || userData.login;
+            elements.profileLink.href = userData.html_url;
+            
+            // Calculate GitHub age
+            const githubAge = getGitHubAge(userData.created_at);
+            elements.githubAge.textContent = githubAge;
+            
+            // Basic stats
+            elements.publicRepos.textContent = userData.public_repos;
+            elements.followers.textContent = userData.followers;
+            elements.following.textContent = userData.following;
+            
+            showData();
+        }
+
+        function displayLanguages(languages) {
+            if (Object.keys(languages).length === 0) {
+                elements.languages.textContent = 'No languages detected';
+                return;
+            }
+
+            const languageList = Object.entries(languages)
+                .map(([lang, count]) => `${lang} (${count})`)
+                .join(', ');
+            
+            elements.languages.textContent = languageList;
+        }
+
+        function displayContributions(contributionData) {
+            elements.contributions.textContent = contributionData.totalContributions || 'N/A';
+        }
+
+        function getGitHubAge(createdAt) {
+            const years = new Date().getFullYear() - new Date(createdAt).getFullYear();
+            return `${years} year${years !== 1 ? 's' : ''}`;
+        }
+
+        // UI Helper Functions
+        function setLoading(loading) {
+            isLoading = loading;
+            elements.loading.classList.toggle('hidden', !loading);
+            elements.findButton.disabled = loading;
+            elements.myGithubButton.disabled = loading;
+            elements.findButton.textContent = loading ? 'Loading...' : 'Find';
+        }
+
+        function showError(message) {
+            elements.errorMessage.textContent = message;
+            elements.errorMessage.classList.remove('hidden');
+        }
+
+        function hideError() {
+            elements.errorMessage.classList.add('hidden');
+        }
+
+        function showData() {
+            elements.githubData.classList.remove('hidden');
+        }
+
+        function hideData() {
+            elements.githubData.classList.add('hidden');
+        }
+
+        console.log('GitHub Explorer loaded! 🚀');
+    </script>
+</body>
 </html>
