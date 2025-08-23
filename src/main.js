@@ -1,136 +1,124 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('node:path');
+const path = require('path');
+const fetch = require('node-fetch');
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+let mainWindow;
+
 const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1000,
+  // Create the browser window
+  mainWindow = new BrowserWindow({
+    width: 1200,
     height: 800,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: false,
       contextIsolation: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, // Webpack magic variable
     },
   });
 
-  // Load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  // Load the webpack-built renderer
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY); // Webpack magic variable
 
   // Open DevTools in development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     mainWindow.webContents.openDevTools();
   }
 };
 
-// 🚀 REGISTER IPC HANDLERS IMMEDIATELY (before app ready)
-console.log('Registering IPC handlers...');
-
-ipcMain.handle('github-get-user', async (event, username) => {
-  console.log(`🔍 Main process: Fetching GitHub user: ${username}`);
-  
-  try {
-    const response = await fetch(`https://api.github.com/users/${username}`, {
-      headers: {
-        'User-Agent': 'GitHub-Explorer-Electron-App',
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('User not found');
-      }
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const userData = await response.json();
-    console.log(`✅ Main process: Successfully fetched user ${username}`);
-    return { success: true, data: userData };
+// GitHub API handlers - The main process handles all API calls
+// ipcMain.handle('github-get-user', async (event, username) => {
+//   try {
+//     console.log(`🔍 Fetching GitHub user: ${username}`);
     
-  } catch (error) {
-    console.error('❌ Main process GitHub API Error:', error.message);
-    return { success: false, error: error.message };
-  }
-});
+//     const response = await fetch(`https://api.github.com/users/${username}`, {
+//       headers: {
+//         'User-Agent': 'Electron-GitHub-App',
+//         'Accept': 'application/vnd.github.v3+json'
+//       }
+//     });
 
-ipcMain.handle('github-get-repos', async (event, username) => {
-  console.log(`🔍 Main process: Fetching repos for ${username}`);
-  
-  try {
-    const response = await fetch(
-      `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
-      {
-        headers: {
-          'User-Agent': 'GitHub-Explorer-Electron-App',
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      }
-    );
+//     if (!response.ok) {
+//       if (response.status === 404) {
+//         throw new Error('User not found');
+//       }
+//       throw new Error(`GitHub API error: ${response.status}`);
+//     }
 
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const repos = await response.json();
+//     const userData = await response.json();
+//     return { success: true, data: userData };
     
-    // Count languages (like your React version)
-    const languages = {};
-    repos.forEach(repo => {
-      if (repo.language) {
-        languages[repo.language] = (languages[repo.language] || 0) + 1;
-      }
-    });
+//   } catch (error) {
+//     console.error('GitHub API Error:', error.message);
+//     return { success: false, error: error.message };
+//   }
+// });
 
-    console.log(`✅ Main process: Successfully fetched ${repos.length} repos for ${username}`);
-    return { success: true, data: repos, languages };
+// // Get user's repositories
+// ipcMain.handle('github-get-repos', async (event, username, page = 1, perPage = 10) => {
+//   try {
+//     console.log(`📚 Fetching repos for ${username}, page ${page}`);
     
-  } catch (error) {
-    console.error('❌ Main process GitHub Repos Error:', error.message);
-    return { success: false, error: error.message, languages: {} };
-  }
-});
+//     const response = await fetch(
+//       `https://api.github.com/users/${username}/repos?page=${page}&per_page=${perPage}&sort=updated`,
+//       {
+//         headers: {
+//           'User-Agent': 'Electron-GitHub-App',
+//           'Accept': 'application/vnd.github.v3+json'
+//         }
+//       }
+//     );
 
-ipcMain.handle('github-get-contributions', async (event, username) => {
-  console.log(`🔍 Main process: Fetching contributions for ${username}`);
-  
-  try {
-    const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${username}`, {
-      headers: {
-        'User-Agent': 'GitHub-Explorer-Electron-App'
-      }
-    });
+//     if (!response.ok) {
+//       throw new Error(`GitHub API error: ${response.status}`);
+//     }
 
-    if (!response.ok) {
-      throw new Error('Contributions API unavailable');
-    }
-
-    const data = await response.json();
-    const contributionData = {
-      currentStreak: data.contributions?.[0]?.contributionDays?.length || 0,
-      totalContributions: data.total?.contributions || 0
-    };
+//     const repos = await response.json();
+//     return { success: true, data: repos };
     
-    console.log(`✅ Main process: Successfully fetched contributions for ${username}`);
-    return { success: true, data: contributionData };
-    
-  } catch (error) {
-    console.error('❌ Main process Contributions Error:', error.message);
-    return { success: false, data: { currentStreak: 0, totalContributions: 0 } };
-  }
-});
+//   } catch (error) {
+//     console.error('GitHub Repos Error:', error.message);
+//     return { success: false, error: error.message };
+//   }
+// });
 
-console.log('✅ All IPC handlers registered!');
+// // Search GitHub users
+// ipcMain.handle('github-search-users', async (event, query, page = 1) => {
+//   try {
+//     console.log(`🔎 Searching GitHub users: ${query}`);
+    
+//     const response = await fetch(
+//       `https://api.github.com/search/users?q=${encodeURIComponent(query)}&page=${page}&per_page=15`,
+//       {
+//         headers: {
+//           'User-Agent': 'Electron-GitHub-App',
+//           'Accept': 'application/vnd.github.v3+json'
+//         }
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`GitHub API error: ${response.status}`);
+//     }
+
+//     const searchResults = await response.json();
+//     return { success: true, data: searchResults };
+    
+//   } catch (error) {
+//     console.error('GitHub Search Error:', error.message);
+//     return { success: false, error: error.message };
+//   }
+// });
 
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
-  console.log('🚀 App is ready, creating window...');
   createWindow();
 
+  // On OS X it's common to re-create a window when the dock icon is clicked
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -145,4 +133,4 @@ app.on('window-all-closed', () => {
   }
 });
 
-console.log('📝 Main process script fully loaded!');
+console.log('🐙 GitHub Electron App - Main process ready!');
