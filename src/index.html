@@ -5,92 +5,15 @@
     <title>GitHub User Finder</title>
   </head>
   <body>
-    <div id="app">
-      <div class="github-app">
-        <header class="header">
-          <h1><i class="bi bi-github"></i> GitHub User Explorer</h1>
-          <div class="theme-toggle-container">
-          <label class="theme-toggle">
-            <input type="checkbox" id="githubThemeToggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-        </header>
-        
-        <main class="main-content">
-          <div class="search-container">
-            <input 
-              type="text" 
-              id="userSearch" 
-              placeholder="Search GitHub users..." 
-              class="search-input"
-            >
-            <div id="searchResults" class="search-results hidden"></div>
-          </div>
-          <!-- Loading Spinner -->
-          <div id="loadingSpinner" class="loading hidden">
-            <div class="spinner"></div>
-            <p>Fetching GitHub data...</p>
-          </div>
-
-          <!-- Error Message -->
-          <div id="errorMessage" class="error hidden"></div>
-
-          <!-- User Profile Section -->
-          <div id="userProfile" class="user-profile hidden">
-            <div class="profile-header">
-              <img id="userAvatar" class="avatar" src="" alt="User Avatar">
-              <div class="profile-info">
-                <h2 id="userName">Loading...</h2>
-                <p id="userLogin">@username</p>
-                <p id="userBio">Bio goes here</p>
-              </div>
-            </div>
-
-            <div class="profile-stats">
-              <div class="stat">
-                <span class="stat-number" id="followersCount">0</span>
-                <span class="stat-label">Followers</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number" id="followingCount">0</span>
-                <span class="stat-label">Following</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number" id="reposCount">0</span>
-                <span class="stat-label">Repositories</span>
-              </div>
-            </div>
-
-            <div class="profile-details">
-              <div class="detail">
-                <strong>📍 Location:</strong> <span id="userLocation">Not specified</span>
-              </div>
-              <div class="detail">
-                <strong>🏢 Company:</strong> <span id="userCompany">Not specified</span>
-              </div>
-              <div class="detail">
-                <strong>📅 Joined:</strong> <span id="joinDate">Unknown</span>
-              </div>
-              <div class="detail">
-                <a id="profileLink" href="#" target="_blank" class="profile-link">
-                  View on GitHub →
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Repositories Section -->
-          <div id="reposSection" class="repos-section hidden">
-            <h3>📚 Recent Repositories</h3>
-            <div id="reposList" class="repos-list"></div>
-            <button id="loadMoreRepos" class="load-more-btn hidden">Load More Repos</button>
-          </div>
-        </main>
-
-        <!-- Theme Toggle -->
-
+    <div class="container">
+      <h1><i class="bi bi-github"></i> GitHub User Finder</h1>
+      <div class="input-section">
+        <input type="text" placeholder="Enter GitHub Username" value="" id="userInput"/>
+        <button id="fetchButton">
+          Fetch User Data
+        </button>
       </div>
+      <div id="result"></div>
     </div>
 
     <!-- Scripts will be injected by Webpack -->
