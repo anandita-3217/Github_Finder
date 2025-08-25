@@ -1,6 +1,6 @@
 {
   "name": "github_finder",
-  "productName": "github_finder",
+  "productName": "GitHub User Finder",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",

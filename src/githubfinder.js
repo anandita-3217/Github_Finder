@@ -190,6 +190,9 @@
 // This module handles all the GitHub API logic
 // It's like having a dedicated GitHub whisperer, but now with proper organization!
 
+// This module handles all the GitHub API logic
+// It's like having a dedicated GitHub whisperer, but now with proper organization!
+
 const https = require('https');
 
 /**
@@ -236,7 +239,6 @@ class GitHubFinder {
       
       // Cache the successful result
       this._cacheResult(cleanUsername, userData);
-      
       console.log(`Successfully fetched data for ${cleanUsername} ✅`);
       return userData;
       

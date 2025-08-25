@@ -1,31 +1,11 @@
-<!-- <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>GitHub User Finder</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1><i class="bi bi-github"></i> GitHub User Finder</h1>
-      <div class="input-section">
-        <input type="text" placeholder="Enter GitHub Username" value="" id="userInput"/>
-        <button id="fetchButton">
-          Fetch User Data
-        </button>
-      </div>
-      <div id="result"></div>
-    </div>
 
-
-  </body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub User Finder</title>
-    <style>
+    <!-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
@@ -177,11 +157,11 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
-    </style>
+    </style> -->
 </head>
 <body>
     <div class="container">
-        <h1>🐙 GitHub User Explorer</h1>
+        <h1><i class="bi bi-github"></i> GitHub User Explorer</h1>
         
         <div class="input-section">
             <input 
@@ -192,11 +172,36 @@
             <button id="fetchButton">
                 Fetch User Data
             </button>
+            <button id="testButton" style="background: #28a745; margin-left: 10px;">
+                Test IPC
+            </button>
+
         </div>
         
         <div id="result"></div>
     </div>
-
-    <script src="renderer.js"></script>
 </body>
 </html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>GitHub User Finder</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1><i class="bi bi-github"></i> GitHub User Finder</h1>
+      <div class="input-section">
+        <input type="text" placeholder="Enter GitHub Username" value="" id="userInput"/>
+        <button id="fetchButton">
+          Fetch User Data
+        </button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+
+  </body>
+</html> -->
