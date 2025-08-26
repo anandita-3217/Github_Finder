@@ -30,7 +30,7 @@ class GitHubFinder {
     
     // Check cache first - why make unnecessary requests?
     if (this._isCacheValid(cleanUsername)) {
-      console.log(`Cache hit for user: ${cleanUsername} 🎯`);
+      // console.log(`Cache hit for user: ${cleanUsername} 🎯`);
       return this.cache.get(cleanUsername).data;
     }
     
@@ -41,7 +41,7 @@ class GitHubFinder {
       
       // Cache the successful result
       this._cacheResult(cleanUsername, userData);
-      console.log(`Successfully fetched data for ${cleanUsername} ✅`);
+      console.log(`Successfully fetched data for ${cleanUsername} `);
       return userData;
       
     } catch (error) {
@@ -148,9 +148,9 @@ class GitHubFinder {
             if (res.statusCode === 200) {
               resolve(jsonData);
             } else if (res.statusCode === 404) {
-              reject(new Error(`User not found. Did they escape to GitLab? 🤔`));
+              reject(new Error(`User not found. Did they escape to GitLab? `));
             } else if (res.statusCode === 403) {
-              reject(new Error(`API rate limit exceeded. GitHub is giving us the silent treatment! 🤐`));
+              reject(new Error(`API rate limit exceeded. GitHub is giving us the silent treatment! `));
             } else {
               reject(new Error(`GitHub API error: ${res.statusCode} - ${jsonData.message || 'Unknown error'}`));
             }

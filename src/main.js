@@ -38,7 +38,7 @@ function createWindow() {
 // This is where the magic happens - IPC handlers! ✨
 ipcMain.handle('fetch-github-user', async (event, username) => {
   try {
-    console.log(`Main process: Fetching data for ${username}`);
+    // console.log(`Main process: Fetching data for ${username}`);
     const userData = await githubFinder.fetchUser(username);
     
     // 🔍 LOG THE DATA HERE
