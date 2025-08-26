@@ -165,117 +165,290 @@ if (result.success) {
     `;
   }
 
-displayUserData(user) {
-  console.log('Displaying user data:', user);
-
-  // Clear old results
-  this.resultDiv.innerHTML = '';
-
-  // Format join date
-  const joinDate = new Date(user.created_at).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  // Card container
-  const userCard = document.createElement('div');
-  userCard.className = 'user-card';
-
-  // Header
-  const header = document.createElement('div');
-  header.className = 'user-header';
-  userCard.appendChild(header);
-
-  // Info container
-  const info = document.createElement('div');
-  info.className = 'user-info';
-  header.appendChild(info);
-
-  // Name
-  const nameEl = document.createElement('h2');
-  nameEl.textContent = user.name || user.login;
-  info.appendChild(nameEl);
-
-  // Avatar
-  const avatar = document.createElement('img');
-  avatar.src = user.avatar_url;
-  avatar.alt = user.name || user.login;
-  avatar.className = 'avatar';
-  avatar.addEventListener('error', () => {
-    console.log('Image failed to load:', avatar.src);
-    avatar.src =
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23ddd'/%3E%3Ctext x='40' y='40' text-anchor='middle' dy='0.3em'%3E👤%3C/text%3E%3C/svg%3E";
-  });
-  info.appendChild(avatar);
-
-  // Username
-  const usernameEl = document.createElement('div');
-  usernameEl.className = 'username';
-  usernameEl.textContent = `@${user.login}`;
-  info.appendChild(usernameEl);
-
-  // Location
-  const locationEl = document.createElement('div');
-  locationEl.textContent = `📍 ${user.location || 'Location unknown'}`;
-  info.appendChild(locationEl);
-
-  // Join date
-  const joinEl = document.createElement('div');
-  joinEl.textContent = `📅 Joined ${joinDate}`;
-  info.appendChild(joinEl);
-
-  // Bio
-  if (user.bio) {
-    const bioEl = document.createElement('div');
-    bioEl.className = 'bio';
-    bioEl.innerHTML = `<strong>Bio:</strong> ${user.bio}`;
-    userCard.appendChild(bioEl);
+  displayUserData(user) {
+    console.log('Displaying user data:', user);
+  
+    // Clear old results
+    this.resultDiv.innerHTML = '';
+  
+    // Format join date
+    const joinDate = new Date(user.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    // Card container
+    const userCard = document.createElement('div');
+    userCard.className = 'user-card';
+  
+    // Header
+    const header = document.createElement('div');
+    header.className = 'user-header';
+    userCard.appendChild(header);
+  
+    // Info container
+    const info = document.createElement('div');
+    info.className = 'user-info';
+    header.appendChild(info);
+  
+    // Name
+    const nameEl = document.createElement('h2');
+    nameEl.textContent = user.name || user.login;
+    info.appendChild(nameEl);
+  
+    // Avatar
+    const avatar = document.createElement('img');
+    avatar.src = user.avatar_url;
+    avatar.alt = user.name || user.login;
+    avatar.className = 'avatar';
+    avatar.addEventListener('error', () => {
+      console.log('Image failed to load:', avatar.src);
+      avatar.src =
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23ddd'/%3E%3Ctext x='40' y='40' text-anchor='middle' dy='0.3em'%3E👤%3C/text%3E%3C/svg%3E";
+    });
+    info.appendChild(avatar);
+  
+    // Username
+    const usernameEl = document.createElement('div');
+    usernameEl.className = 'username';
+    usernameEl.textContent = `@${user.login}`;
+    info.appendChild(usernameEl);
+  
+    // Location
+    const locationEl = document.createElement('div');
+    locationEl.textContent = `📍 ${user.location || 'Location unknown'}`;
+    info.appendChild(locationEl);
+  
+    // Join date
+    const joinEl = document.createElement('div');
+    joinEl.textContent = `📅 Joined ${joinDate}`;
+    info.appendChild(joinEl);
+  
+    // Bio
+    if (user.bio) {
+      const bioEl = document.createElement('div');
+      bioEl.className = 'bio';
+      bioEl.innerHTML = `<strong>Bio:</strong> ${user.bio}`;
+      userCard.appendChild(bioEl);
+    }
+  
+    // Stats
+    const stats = document.createElement('div');
+    stats.className = 'stats';
+  
+    const makeStat = (num, label) => {
+      const stat = document.createElement('div');
+      stat.className = 'stat';
+    
+      const numEl = document.createElement('div');
+      numEl.className = 'stat-number';
+      numEl.textContent = num;
+    
+      const labelEl = document.createElement('div');
+      labelEl.className = 'stat-label';
+      labelEl.textContent = label;
+    
+      stat.appendChild(numEl);
+      stat.appendChild(labelEl);
+      return stat;
+    };
+  
+    stats.appendChild(makeStat(user.public_repos || 0, 'Repositories'));
+    stats.appendChild(makeStat(user.followers || 0, 'Followers'));
+    stats.appendChild(makeStat(user.following || 0, 'Following'));
+    stats.appendChild(makeStat(user.public_gists || 0, 'Gists'));
+  
+    userCard.appendChild(stats);
+    // Add after: userCard.appendChild(stats);
+  
+  // Repositories button
+  if (user.public_repos > 0) {
+    const reposButton = document.createElement('button');
+    reposButton.textContent = `View ${user.public_repos} Repositories`;
+    reposButton.className = 'repos-button';
+    reposButton.style.cssText = `
+      margin: 15px 0;
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    `;
+    
+    reposButton.addEventListener('click', () => this.loadUserRepos(user.login));
+    reposButton.addEventListener('mouseenter', () => {
+      reposButton.style.background = '#218838';
+    });
+    reposButton.addEventListener('mouseleave', () => {
+      reposButton.style.background = '#28a745';
+    });
+    
+    userCard.appendChild(reposButton);
   }
-
-  // Stats
-  const stats = document.createElement('div');
-  stats.className = 'stats';
-
-  const makeStat = (num, label) => {
-    const stat = document.createElement('div');
-    stat.className = 'stat';
-
-    const numEl = document.createElement('div');
-    numEl.className = 'stat-number';
-    numEl.textContent = num;
-
-    const labelEl = document.createElement('div');
-    labelEl.className = 'stat-label';
-    labelEl.textContent = label;
-
-    stat.appendChild(numEl);
-    stat.appendChild(labelEl);
-    return stat;
-  };
-
-  stats.appendChild(makeStat(user.public_repos || 0, 'Repositories'));
-  stats.appendChild(makeStat(user.followers || 0, 'Followers'));
-  stats.appendChild(makeStat(user.following || 0, 'Following'));
-  stats.appendChild(makeStat(user.public_gists || 0, 'Gists'));
-
-  userCard.appendChild(stats);
-
-  // Blog
-  if (user.blog) {
-    const blogEl = document.createElement('div');
-    blogEl.style.marginTop = '15px';
-    blogEl.innerHTML = `<strong>Website:</strong> <a href="${user.blog}" target="_blank" rel="noopener">${user.blog}</a>`;
-    userCard.appendChild(blogEl);
+  
+    // Blog
+    if (user.blog) {
+      const blogEl = document.createElement('div');
+      blogEl.style.marginTop = '15px';
+      blogEl.innerHTML = `<strong>Website:</strong> <a href="${user.blog}" target="_blank" rel="noopener">${user.blog}</a>`;
+      userCard.appendChild(blogEl);
+    }
+  
+    // Append final card
+    this.resultDiv.appendChild(userCard);
+  
+    console.log('User data displayed successfully! ✅');
   }
-
-  // Append final card
-  this.resultDiv.appendChild(userCard);
-
-  console.log('User data displayed successfully! ✅');
-}
-
-
+  
+  async loadUserRepos(username) {
+    console.log(`🔍 Loading repositories for ${username}`);
+    
+    try {
+      // Show loading state
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'loading';
+      loadingDiv.textContent = '📂 Loading repositories...';
+      loadingDiv.style.marginTop = '20px';
+      this.resultDiv.appendChild(loadingDiv);
+      
+      // Fetch repos using our existing API
+      const result = await window.electronAPI.fetchGitHubRepos(username, {
+        perPage: 10,
+        sort: 'updated'
+      });
+      
+      // Remove loading
+      loadingDiv.remove();
+      
+      if (result.success) {
+        this.displayUserRepos(result.data);
+      } else {
+        this.showError(`Failed to load repositories: ${result.error}`);
+      }
+      
+    } catch (error) {
+      console.error('Error loading repos:', error);
+      this.showError(`Error loading repositories: ${error.message}`);
+    }
+  }
+  
+  displayUserRepos(repos) {
+    console.log(`📂 Displaying ${repos.length} repositories`);
+    
+    // Create repos container
+    const reposContainer = document.createElement('div');
+    reposContainer.className = 'repos-container';
+    reposContainer.style.cssText = `
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    `;
+    
+    // Title
+    const title = document.createElement('h3');
+    title.textContent = `📂 Latest Repositories (${repos.length})`;
+    title.style.cssText = `
+      margin: 0 0 15px 0;
+      color: #2c3e50;
+      font-size: 1.2em;
+    `;
+    reposContainer.appendChild(title);
+    
+    // Repos list
+    repos.forEach(repo => {
+      const repoItem = document.createElement('div');
+      repoItem.className = 'repo-item';
+      repoItem.style.cssText = `
+        background: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        transition: transform 0.2s;
+      `;
+      
+      repoItem.addEventListener('mouseenter', () => {
+        repoItem.style.transform = 'translateX(5px)';
+      });
+      repoItem.addEventListener('mouseleave', () => {
+        repoItem.style.transform = 'translateX(0)';
+      });
+      
+      // Repo name (clickable)
+      const nameLink = document.createElement('a');
+      nameLink.href = repo.html_url;
+      nameLink.target = '_blank';
+      nameLink.rel = 'noopener';
+      nameLink.textContent = repo.name;
+      nameLink.style.cssText = `
+        font-weight: bold;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 1.1em;
+      `;
+      nameLink.addEventListener('hover', () => {
+        nameLink.style.textDecoration = 'underline';
+      });
+      
+      // Description
+      const description = document.createElement('div');
+      description.textContent = repo.description || 'No description available';
+      description.style.cssText = `
+        color: #666;
+        margin: 5px 0;
+        font-size: 0.9em;
+      `;
+      
+      // Stats row
+      const statsRow = document.createElement('div');
+      statsRow.style.cssText = `
+        display: flex;
+        gap: 15px;
+        margin-top: 8px;
+        font-size: 0.8em;
+        color: #666;
+      `;
+      
+      // Language
+      if (repo.language) {
+        const lang = document.createElement('span');
+        lang.innerHTML = `🔤 ${repo.language}`;
+        statsRow.appendChild(lang);
+      }
+      
+      // Stars
+      const stars = document.createElement('span');
+      stars.innerHTML = `⭐ ${repo.stargazers_count}`;
+      statsRow.appendChild(stars);
+      
+      // Forks
+      const forks = document.createElement('span');
+      forks.innerHTML = `🍴 ${repo.forks_count}`;
+      statsRow.appendChild(forks);
+      
+      // Updated date
+      const updated = document.createElement('span');
+      const updateDate = new Date(repo.updated_at).toLocaleDateString();
+      updated.innerHTML = `📅 ${updateDate}`;
+      statsRow.appendChild(updated);
+      
+      // Assemble repo item
+      repoItem.appendChild(nameLink);
+      repoItem.appendChild(description);
+      repoItem.appendChild(statsRow);
+      
+      reposContainer.appendChild(repoItem);
+    });
+    
+    this.resultDiv.appendChild(reposContainer);
+  }
   // displayUserData(user) {
   //   console.log('Displaying user data:', user);
     
