@@ -1,21 +1,8 @@
-// const { contextBridge, ipcRenderer } = require('electron');
-// const { fetchGitHubUser } = require('./githubfinder');
-
-// contextBridge.exposeInMainWorld('electronAPI',{
-//   fetchGitHubUser: (username) => ipcRenderer.invoke('fetch-github-user',username),
-// });
-
-// console.log('🔗 Preload script loaded - GitHub API bridge ready!');
 const { contextBridge, ipcRenderer } = require('electron');
 
 console.log('Preload script loaded! 🚀');
-
-// This is like a secure phone line between renderer and main process
-// Think of it as a bouncer that only lets approved messages through
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Expose a safe way to fetch GitHub users
 fetchGitHubUser: async (username) => {
-  // console.log('🛡️ PRELOAD: fetchGitHubUser called with:', username);
   try {
     const result = await ipcRenderer.invoke('fetch-github-user', username);
     // console.log('🛡️ PRELOAD: Got result from main:', result);

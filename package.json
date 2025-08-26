@@ -1,8 +1,9 @@
 {
+
   "name": "github_finder",
   "productName": "GitHub User Finder",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Finds GitHub Profiles based on Username",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

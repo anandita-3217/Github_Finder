@@ -1,5 +1,7 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { WebpackPlugin } = require('@electron-forge/plugin-webpack');
+
 
 module.exports = {
   packagerConfig: {
@@ -46,6 +48,7 @@ module.exports = {
             },
           ],
         },
+        devContentSecurityPolicy: `default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' https://avatars.githubusercontent.com data:; connect-src 'self' https://api.github.com;`,
       },
     },
     // Fuses are used to enable/disable various Electron functionality
