@@ -260,33 +260,12 @@ if (result.success) {
     stats.appendChild(makeStat(user.public_gists || 0, 'Gists'));
 
     userCard.appendChild(stats);
-    // Add after: userCard.appendChild(stats);
-
   // Repositories button
   if (user.public_repos > 0) {
     const reposButton = document.createElement('button');
     reposButton.textContent = `View ${user.public_repos} Repositories`;
     reposButton.className = 'repos-button';
-    reposButton.style.cssText = `
-      margin: 15px 0;
-      padding: 10px 20px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
-    `;
-
     reposButton.addEventListener('click', () => this.loadUserRepos(user.login));
-    reposButton.addEventListener('mouseenter', () => {
-      reposButton.style.background = '#218838';
-    });
-    reposButton.addEventListener('mouseleave', () => {
-      reposButton.style.background = '#28a745';
-    });
-
     userCard.appendChild(reposButton);
   }
 
@@ -342,60 +321,22 @@ if (result.success) {
     // Create repos container
     const reposContainer = document.createElement('div');
     reposContainer.className = 'repos-container';
-    reposContainer.style.cssText = `
-      margin-top: 20px;
-      padding: 20px;
-      background: #f8f9fa;
-      border-radius: 12px;
-      max-height: 400px;
-      overflow-y: auto;
-    `;
 
     // Title
     const title = document.createElement('h3');
     title.textContent = `📂 Latest Repositories (${repos.length})`;
-    title.style.cssText = `
-      margin: 0 0 15px 0;
-      color: #2c3e50;
-      font-size: 1.2em;
-    `;
     reposContainer.appendChild(title);
 
     // Repos list
     repos.forEach(repo => {
       const repoItem = document.createElement('div');
       repoItem.className = 'repo-item';
-      repoItem.style.cssText = `
-        background: white;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        border-left: 4px solid #667eea;
-        transition: transform 0.2s;
-      `;
-
-      repoItem.addEventListener('mouseenter', () => {
-        repoItem.style.transform = 'translateX(5px)';
-      });
-      repoItem.addEventListener('mouseleave', () => {
-        repoItem.style.transform = 'translateX(0)';
-      });
-
       // Repo name (clickable)
       const nameLink = document.createElement('a');
       nameLink.href = repo.html_url;
       nameLink.target = '_blank';
       nameLink.rel = 'noopener';
       nameLink.textContent = repo.name;
-      nameLink.style.cssText = `
-        font-weight: bold;
-        color: #667eea;
-        text-decoration: none;
-        font-size: 1.1em;
-      `;
-      nameLink.addEventListener('hover', () => {
-        nameLink.style.textDecoration = 'underline';
-      });
 
       // Description
       const description = document.createElement('div');

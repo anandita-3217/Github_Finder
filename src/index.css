@@ -125,7 +125,55 @@ button:disabled {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-        
+
+.repos-button{
+    margin: 15px 0;
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+.repos-button:focus{
+    background-color: #218838;
+}    
+.repos-container{
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}    
+.repos-container h3{
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 1.2em;
+}
+.repo-item{
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s;
+}
+.repo-item:focus{
+    transform: translateX(5px);
+}
+.repo-item a{
+    font-weight: bold;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+.repo-item a:hover{
+    text-decoration: underline;
+}
+
 .error {
     background: #fed7d7;
     border: 1px solid #feb2b2;
